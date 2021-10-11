@@ -1,31 +1,27 @@
 import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
-
-const REPOS_QUERY = gql`
-  {
-    search(type: REPOSITORY, query: "language:JavaScript", last: 5) {
-      edges {
-        node {
-          __typename
-        }
-      }
-    }
-  }
-`;
+import { useQuery } from '@apollo/client';
+import Information from './components/Information';
+import { GET_REPOS } from './services/graphql';
 
 const App = () => {
+  const [termTemp, setTermTemp] = useState('');
   const [term, setTerm] = useState('');
-  const {loading, error, data} = useQuery(REPOS_QUERY);
+
+  const { loading, error, data } = useQuery(GET_REPOS, {
+    variables: {
+      language: term,
+    },
+  });
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log(term);
+    setTerm(termTemp);
   };
 
-  const handleSetTerm = ({ target: { value } }) => setTerm(value);
-
-  if (data) console.log(data)
-  if (error) console.log(error.message)
+  const handleSetTerm = ({ target: { value } }) => {
+    if (value === '') return setTermTemp('');
+    setTermTemp(`language:${value}`);
+  };
 
   return (
     <div className="container-fluid mt-3">
@@ -44,12 +40,12 @@ const App = () => {
 
       {loading && <p>loading...</p>}
       {error && <p>error...</p>}
-      <div className="row">
-        <div className="col-md-3">Name: </div>
-        <div className="col-md-3">Hii: </div>
-        <div className="col-md-3">Hii: </div>
-        <div className="col-md-3">Hii: </div>
-      </div>
+
+      {data && (
+        <div className="row">
+          <Information resData={data?.search?.edges || []} />
+        </div>
+      )}
     </div>
   );
 };
