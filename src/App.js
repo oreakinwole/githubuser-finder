@@ -29,7 +29,7 @@ const App = () => {
         <input
           type="search"
           className="form-control col-md-3 d-inline mr-3 align-middle"
-          placeholder="Enter search term"
+          placeholder="Enter Language e.g Javascript"
           onChange={handleSetTerm}
         />
 
